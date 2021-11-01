@@ -35,16 +35,16 @@ async function run() {
             const cursor = userCollection.find({});
             const data = await cursor.toArray();
             res.json(data)
-            
+
         });
         app.post('/services', async (req, res) => {
             const data = req.body;
-            const result=await userCollection.insertOne(data)
+            const result = await userCollection.insertOne(data)
         })
-        app.get('/services/:id',async(req, res) => {
-            const id =req.params.id
-            console.log('get service by id',id);
-            const quary = {_id:ObjectId(id)};
+        app.get('/services/:id', async (req, res) => {
+            const id = req.params.id
+            console.log('get service by id', id);
+            const quary = { _id: ObjectId(id) };
             const result = await userCollection.findOne(quary);
             res.json(result)
 
@@ -56,7 +56,7 @@ async function run() {
             const data = req.body;
             const result = await userRegister.insertOne(data);
             res.json(result);
-           
+
         });
         app.get('/booking', async (req, res) => {
             const bookings = await userRegister.find({}).toArray();
@@ -71,18 +71,47 @@ async function run() {
 
 
         });
-        app.delete('/booking/:id', async (req, res) => {
-            console.log(req.params.id);
+
+        app.put('/booking/:id', async (req, res) => {
+            
+            const data = req.body;
+            
+            const updateData = {
+                $set: {
+                    status: data.status
+                }
+            }
+            const updateId = req.params.id;
+            
+
+            const quary = { _id:ObjectId(updateId)}
+            const result = await userRegister.updateOne(quary,updateData);
+            res.json(result);
         })
-        
+               
+            
 
-        
 
-     }
-    finally {
-        
+
+
+
+
+        app.delete('/booking/:id', async (req, res) => {
+            const deleteID = req.params.id;
+            const quary = { _id: ObjectId(deleteID) };
+            const result = await userRegister.deleteOne(quary);
+            res.json(result)
+        });
+
+
+
+
+
     }
- }
+    finally {
+
+    }
+}
 run().catch(error => console.log(error));
 
 app.get('/', (req, res) => {
@@ -101,7 +130,7 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
     console.log('listening to port', port);
-    
+
 })
 
 
